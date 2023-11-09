@@ -16,27 +16,30 @@ def drop_db(conn: Connection):
 def create_db(conn: Connection):
     # Create the User table
     conn.execute('''CREATE TABLE IF NOT EXISTS Users
-	(ID INT PRIMARY KEY			NOT NULL,
-	name			TEXT		NOT NULL);''')
+	(ID     INTEGER NOT NULL    UNIQUE,
+	name    TEXT    NOT NULL,
+    PRIMARY KEY (ID AUTOINCREMENT));''')
 
     # Create the Task Table
     conn.execute('''CREATE TABLE IF NOT EXISTS Tasks
-	(ID INT PRIMARY KEY			NOT NULL,
-	name			TEXT		NOT NULL,
-	create_date		DATETIME	NOT NULL,
-	due_date		DATETIME,
-	complete,		BOOLEAN,
-	user_id,		INT, 		NOT NULL,
+	(ID         INTEGER     NOT NULL    UNIQUE,
+	name		TEXT        NOT NULL,
+	create_date	DATETIME    NOT NULL,
+	due_date	DATETIME,
+	complete	BOOLEAN,
+	user_id 	INT 		NOT NULL,
+    PRIMARY KEY (ID AUTOINCREMENT),
 	FOREIGN KEY (user_id) REFERENCES Users (id));''')
 
     # Create the Subtask Table
     conn.execute('''CREATE TABLE IF NOT EXISTS Sub_Tasks
-	(ID INT PRIMARY KEY			NOT NULL,
-	name			TEXT		NOT NULL,
-	create_date		DATETIME	NOT NULL,
-	due_date		DATETIME,
-	complete,		BOOLEAN,
-	task_id,		INT, 		NOT NULL,
+	(ID         INTEGER 	NOT NULL    UNIQUE,
+	name		TEXT		NOT NULL,
+	create_date	DATETIME	NOT NULL,
+	due_date	DATETIME,
+	complete	BOOLEAN,
+	task_id 	INT 		NOT NULL,
+    PRIMARY KEY (ID AUTOINCREMENT),
 	FOREIGN KEY (task_id) REFERENCES Tasks (id));''')
 
 
