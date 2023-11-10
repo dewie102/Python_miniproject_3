@@ -266,11 +266,12 @@ def create_task_db(task_dict: dict[str, str]):
         with sql.connect(DATABASE) as conn:
             conn.execute(f'''INSERT INTO Tasks
                                (name, create_date, due_date, complete, user_id) VALUES
-                               ('{task_dict["task_name"]}',
+                               (:task_name,
                                '{datetime.datetime.now().strftime(DATETIME_DB_FORMAT)}',
                                '{task_dict["due_date"]}',
                                0,
-                               {task_dict["user_id"]});''')
+                               {task_dict["user_id"]});''',
+                               {"task_name": task_dict["task_name"]})
             conn.commit()
     except Exception as ex: # pylint: disable=broad-except
         print(f"Something went wrong: {ex}")
@@ -292,11 +293,12 @@ def update_task(task_dict: dict[str, int | str | bool | None]):
     try:
         with sql.connect(DATABASE) as conn:
             conn.execute(f'''UPDATE Tasks
-                            SET name = '{task_dict["task_name"]}',
+                            SET name = :task_name,
                             due_date ='{task_dict["due_date"]}',
                             complete = '{task_dict["complete"]}'
                             WHERE
-                            ID={task_dict["task_id"]};''')
+                            ID={task_dict["task_id"]};''',
+                            {"task_name": task_dict["task_name"]})
             conn.commit()
     except Exception as ex: # pylint: disable=broad-except
         print(f"Something went wrong: {ex}")

@@ -13,7 +13,7 @@
         <label for="" class="form-label">Due Date</label>
         <input type="text" name="" id="" class="form-control" disabled value='{{task.due_date}}'>
         <label for="" class="form-label">Complete</label>
-        <input type="checkbox" class="form-check-input" disabled checked={{task.complete}}>
+        <input type="checkbox" class="form-check-input" disabled {{ "checked" if task.complete else "" }}>
     </form>
 
     <form action="/tasks" method="get">

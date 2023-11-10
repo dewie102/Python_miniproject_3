@@ -14,8 +14,7 @@
         <label for="" name="due_date" class="form-label">Due Date</label>
         <input type="datetime-local" name="due_date" id="" class="form-control" value='{{task.due_date}}'>
         <label for="" name="complete" class="form-label">Complete</label>
-        {{task.complete}}
-        <input type="checkbox" class="form-check-input" name="complete" checked='{{task.complete}}'>
+        <input type="checkbox" class="form-check-input" name="complete" {{ "checked" if task.complete else "" }}>
         <input type="hidden" name="task_user_id" value='{{ task.user_id }}' />
         <br>
         <button class="btn btn-warning" type="submit">Update</button>
