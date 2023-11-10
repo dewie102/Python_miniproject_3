@@ -14,7 +14,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 
-DATABASE = os.environ.get("DATABASE")
+DATABASE = os.environ.get("DATABASE", "todo.db")
 
 
 DATETIME_DB_FORMAT = "%Y-%m-%d %H:%M"
@@ -97,9 +97,9 @@ def edit_task(task_id: int):
         return render_template("edit_task.html", task=task)
     else:
         user_id: int = session["user_id"]  # type: ignore
-        task_user_id: int = request.form.get("task_user_id")
+        task_user_id: str | None = request.form.get("task_user_id")
 
-        if str(user_id) != task_user_id:
+        if str(user_id) != task_user_id: # type: ignore
             return redirect(url_for("index"), code=303)
 
         # Getting all the information from form
@@ -111,6 +111,9 @@ def edit_task(task_id: int):
             complete = True
         else:
             complete = False
+
+        if not due_date:
+            due_date = task["due_date"]            
 
         # Take the string date and make it a datetime object
         due_date = datetime.datetime.strptime(
@@ -284,7 +287,7 @@ def delete_task_db(task_id: int):
         print(f"Something went wrong: {ex}")
 
 
-def update_task(task_dict: dict[str, str]):
+def update_task(task_dict: dict[str, int | str | bool | None]):
     """Method to update a task in the database"""
     try:
         with sql.connect(DATABASE) as conn:
