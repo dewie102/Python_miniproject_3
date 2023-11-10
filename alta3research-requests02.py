@@ -19,5 +19,3 @@ for task in tasks:
     print(f"\tComplete?: {task['complete']}")
     print(f"\tTask ID: {task['ID']}")
     print()
-
-#print(data)

@@ -4,6 +4,7 @@
 {{ super() }}
 {% endblock %}
 {% block content %}
+<div class="d-flex flex-column align-items-center">
 <form action="/tasks/create" method="post">
     <label for="task_name_label" class="form-label">Task Name</label>
     <input type="text" name="task_name" id="name" class="form-control" required>
@@ -11,4 +12,5 @@
     <input type="datetime-local" name="due_date" id="due_date" class="form-control">
     <button class="btn btn-primary" type="submit">Create!</button>
 </form>
+</div>
 {% endblock %}

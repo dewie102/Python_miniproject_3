@@ -41,7 +41,7 @@ def login():
 def view_user_tasks():
     if not session.get("user_id"): #type: ignore
         return redirect(url_for("index"), code=303)
-    
+
     user_id: int = session["user_id"] # type: ignore
     username: str = session["username"] # type: ignore
 
@@ -54,7 +54,7 @@ def view_user_tasks():
 def get_user_tasks_json():
     if not session.get("user_id"): #type: ignore
         return redirect(url_for("index"), code=303)
-    
+
     user_id: int = session["user_id"] # type: ignore
 
     tasks = get_user_tasks(user_id) #type: ignore
@@ -81,7 +81,7 @@ def create_task():
     else:
         if not session.get("user_id"): #type: ignore
             return redirect(url_for("index"), code=303)
-    
+
         user_id = session["user_id"] #type: ignore
         task_name = request.form.get("task_name")
         due_date = request.form.get("due_date")
@@ -92,7 +92,7 @@ def create_task():
         if not task_name:
             print("No task name provided")
             return redirect(url_for("view_user_tasks"))
-        
+  
         if not due_date:
             due_date =\
                 (datetime.datetime.now() +\

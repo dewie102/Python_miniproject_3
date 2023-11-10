@@ -7,19 +7,22 @@
 </script>
 {% endblock %}
 {% block content %}
-<form action="/tasks/create" method="get"></form>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Complete</th>
-            <th scope="col">Name</th>
-            <th scope="col">Create Date</th>
-            <th scope="col">Due Date</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody id="tasks_container">
-    </tbody>
-</table>
+<div class="d-flex container text-center">
+
+    <form action="/tasks/create" method="get"></form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Complete</th>
+                <th scope="col">Name</th>
+                <th scope="col">Create Date</th>
+                <th scope="col">Due Date</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="tasks_container">
+        </tbody>
+    </table>
+</div>
 <script type="text/javascript" src="/static/js/tasks.js"></script>
 {% endblock %}
