@@ -39,12 +39,27 @@ def login():
 
 @app.route("/tasks")
 def view_user_tasks():
+    if not session.get("user_id"): #type: ignore
+        return redirect(url_for("index"), code=303)
+    
     user_id: int = session["user_id"] # type: ignore
     username: str = session["username"] # type: ignore
 
     tasks = get_user_tasks(user_id) #type: ignore
 
     return render_template("tasks.html", tasks = tasks)
+
+
+@app.route("/tasks/json")
+def get_user_tasks_json():
+    if not session.get("user_id"): #type: ignore
+        return redirect(url_for("index"), code=303)
+    
+    user_id: int = session["user_id"] # type: ignore
+
+    tasks = get_user_tasks(user_id) #type: ignore
+
+    return tasks
 
 
 @app.route("/tasks/<task_id>")
@@ -60,6 +75,9 @@ def create_task():
     if request.method == "GET":
         return render_template("create.html")
     else:
+        if not session.get("user_id"): #type: ignore
+            return redirect(url_for("index"), code=303)
+    
         user_id = session["user_id"] #type: ignore
         task_name = request.form.get("task_name")
         due_date = request.form.get("due_date")
