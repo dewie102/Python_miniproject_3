@@ -2,6 +2,9 @@
 {% block title %}Tasks{% endblock %}
 {% block head %}
 {{ super() }}
+<script type="text/javascript">
+    let incoming_tasks = {{ tasks| tojson }}
+</script>
 {% endblock %}
 {% block content %}
 <form action="/tasks/create" method="get"></form>
@@ -15,32 +18,8 @@
             <th scope="col"></th>
         </tr>
     </thead>
-    <tbody>
-        {% for task in tasks %}
-        <tr class="task">
-            {% if task.complete == "true" %}
-            <td><input type="checkbox" class="form-check-input" checked="{{ task.complete }}" disabled></td>
-            {% else %}
-            <td><input type="checkbox" class="form-check-input" disabled></td>
-            {% endif %}
-            <td>{{ task.name }}</td>
-            <td>{{ task.create_date }}</td>
-            <td>{{ task.due_date }}</td>
-            <td>
-                <div>
-                    <form action="/tasks/{{task.ID}}" method="get">
-                        <button id="view_{{task.ID}}" type="submit" class="btn btn-primary">View</button>
-                    </form>
-                    <form action="" method="get">
-                        <button id="edit_{{task.ID}}" type="button" class="btn btn-warning">Edit</button>
-                    </form>
-                    <form action="/tasks/delete/{{ task.ID }}" method="post">
-                        <button id="delete_{{task.ID}}" type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
+    <tbody id="tasks_container">
     </tbody>
 </table>
+<script type="text/javascript" src="/static/js/tasks.js"></script>
 {% endblock %}

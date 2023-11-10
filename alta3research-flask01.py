@@ -105,10 +105,11 @@ def create_task():
 
 
 # Have to make this POST for now because html forms only support get and post...
-@app.route("/tasks/delete/<task_id>", methods=["POST"])
+@app.route("/tasks/delete/<task_id>", methods=["DELETE"])
 def delete_task(task_id: int):
     delete_task_db(task_id)
-    return redirect(url_for("view_user_tasks"), code=303)
+    return "{}"
+    #return redirect(url_for("view_user_tasks"), code=303)
 
 
 def get_or_create_user(username: str):
