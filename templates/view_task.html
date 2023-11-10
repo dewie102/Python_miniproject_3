@@ -4,14 +4,16 @@
 {{ super() }}
 {% endblock %}
 {% block content %}
-<h3>Name</h3>
-<h4>{{ task.name }}</h4>
-<h3>Create Date</h3>
-<h4>{{ task.create_date }}</h4>
-<h3>Due Date</h3>
-<h4>{{ task.due_date }}</h4>
-<h3>Complete</h3>
-<h4>{{ task.complete }}</h4>
+<form action="">
+    <label for="" class="form-label">Name</label>
+    <input type="text" name="" id="" class="form-control" disabled value={{task.name}}>
+    <label for="" class="form-label">Created Date</label>
+    <input type="text" name="" id="" class="form-control" disabled value={{task.created_date}}>
+    <label for="" class="form-label">Due Date</label>
+    <input type="text" name="" id="" class="form-control" disabled value={{task.due_date}}>
+    <label for="" class="form-label">Complete</label>
+    <input type="checkbox" class="form-check-input" disabled checked={{task.complete}}>
+</form>
 
 <form action="/tasks" method="get">
     <button class="btn btn-primary" type="submit">Go Back</button>

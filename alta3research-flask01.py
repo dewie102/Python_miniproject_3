@@ -64,8 +64,12 @@ def get_user_tasks_json():
 
 @app.route("/tasks/<task_id>")
 def view_task(task_id: int):
+    if not session.get("user_id"): #type: ignore
+        return redirect(url_for("index"), code=303)
+    
+    user_id: int  = session["user_id"] #type: ignore
 
-    task = get_task(task_id)
+    task = get_task(task_id, user_id) #type: ignore
 
     return render_template("view_task.html", task = task)
 
@@ -173,14 +177,14 @@ def get_user_tasks(user_id: int) -> List[Dict[str, str]]:
         return tasks
 
 
-def get_task(task_id: int):
+def get_task(task_id: int, user_id: int):
     task: Dict[str, str] = {}
     try:
         with sql.connect(database_name) as conn:
             conn.row_factory = sql.Row
             cursor = conn.cursor()
 
-            cursor.execute(f"SELECT * FROM Tasks WHERE ID={task_id}")
+            cursor.execute(f"SELECT * FROM Tasks WHERE ID={task_id} AND user_id={user_id}")
             result = cursor.fetchone()
 
             task = dict(result)
