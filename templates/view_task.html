@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}TODO List - Task{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h3>Name</h3>
+<h4>{{ task.name }}</h4>
+<h3>Create Date</h3>
+<h4>{{ task.create_date }}</h4>
+<h3>Due Date</h3>
+<h4>{{ task.due_date }}</h4>
+<h3>Complete</h3>
+<h4>{{ task.complete }}</h4>
+
+<form action="/tasks" method="get">
+    <button class="btn btn-primary" type="submit">Go Back</button>
+</form>
+{% endblock %}

@@ -38,9 +38,17 @@ def get_tasks():
     user_id: int = session["user_id"] # type: ignore
     username: str = session["username"] # type: ignore
 
-    tasks = get_user_tasks(user_id)
+    tasks = get_user_tasks(user_id) #type: ignore
 
     return render_template("tasks.html", tasks = tasks)
+
+
+@app.route("/tasks/<task_id>")
+def view_task(task_id: int):
+
+    task = get_task(task_id)
+
+    return render_template("view_task.html", task = task)
 
 @app.route("/tasks/create")
 def create_task():
@@ -110,6 +118,24 @@ def get_user_tasks(user_id: int) -> List[Dict[str, str]]:
         print(f"Something went wrong: {ex}")
     finally:
         return tasks
+
+
+def get_task(task_id):
+    task: Dict[str, str] = {}
+    try:
+        with sql.connect(database_name) as conn:
+            conn.row_factory = sql.Row
+            cursor = conn.cursor()
+
+            cursor.execute(f"SELECT * FROM Tasks WHERE ID={task_id}")
+            result = cursor.fetchone()
+
+            task = dict(result)
+    except Exception as ex:
+        print(f"Something went wrong: {ex}")
+    finally:
+        return task
+
 
 
 if __name__ == "__main__":
