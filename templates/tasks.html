@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Tasks{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Create Date</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Complete</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.create_date }}</td>
+            <td>{{ task.due_date }}</td>
+            <td>{{ task.complete }}</td>
+            <td>
+                <div>
+                    <button type="button" class="btn btn-primary">View</button>
+                    <button type="button" class="btn btn-warning">Edit</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
