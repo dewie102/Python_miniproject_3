@@ -4,20 +4,23 @@
 {{ super() }}
 {% endblock %}
 {% block content %}
+
 <div class="d-flex flex-column align-items-center">
-        <form action="/tasks/edit/{{task.ID}}" method="post">
-            <label for="" class="form-label">Name</label>
-            <input type="text" name="task_name" id="" class="form-control" value='{{task.name}}'>
-            <label for="" class="form-label">Created Date</label>
-            <input type="datetime-local" name="" id="" class="form-control" disabled value='{{task.create_date}}'>
-            <label for="" name="due_date" class="form-label">Due Date</label>
-            <input type="datetime-local" name="due_date" id="" class="form-control" value='{{task.due_date}}'>
-            <label for="" name="complete" class="form-label">Complete</label>
-            <input type="checkbox" class="form-check-input" name="complete" checked={{task.complete}}>
-            <input type="hidden" name="task_user_id" value='{{ task.user_id }}' />
-            <br>
-            <button class="btn btn-warning" type="submit">Update</button>
-            <button class="btn btn-primary" type="button" onclick="location.href='{{url_for('view_user_tasks')}}'">Go Back</button>
-        </form>
+    <form action="/tasks/edit/{{task.ID}}" method="post">
+        <label for="" class="form-label">Name</label>
+        <input type="text" name="task_name" id="" class="form-control" value='{{task.name}}'>
+        <label for="" class="form-label">Created Date</label>
+        <input type="datetime-local" name="" id="" class="form-control" disabled value='{{task.create_date}}'>
+        <label for="" name="due_date" class="form-label">Due Date</label>
+        <input type="datetime-local" name="due_date" id="" class="form-control" value='{{task.due_date}}'>
+        <label for="" name="complete" class="form-label">Complete</label>
+        {{task.complete}}
+        <input type="checkbox" class="form-check-input" name="complete" checked='{{task.complete}}'>
+        <input type="hidden" name="task_user_id" value='{{ task.user_id }}' />
+        <br>
+        <button class="btn btn-warning" type="submit">Update</button>
+        <button class="btn btn-primary" type="button" onclick="location.href='{{url_for('view_user_tasks')}}'">Go
+            Back</button>
+    </form>
 </div>
 {% endblock %}

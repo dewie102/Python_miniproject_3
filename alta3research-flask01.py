@@ -108,9 +108,9 @@ def edit_task(task_id: int):
         complete = request.form.get("complete")
 
         if complete == 'on':
-            complete = True
+            complete = 1
         else:
-            complete = False
+            complete = 0
 
         if not due_date:
             due_date = task["due_date"]            
@@ -207,7 +207,7 @@ def get_or_create_user(username: str):
                                ("DEFAULT TASK",
                                '{datetime.datetime.now().strftime(DATETIME_DB_FORMAT)}',
                                '{(datetime.datetime.now() + datetime.timedelta(days=1)).strftime(DATETIME_DB_FORMAT)}',
-                               "false",
+                               0,
                                {new_user["ID"]})'''
 
                 cursor.execute(cmd)
@@ -269,7 +269,7 @@ def create_task_db(task_dict: dict[str, str]):
                                ('{task_dict["task_name"]}',
                                '{datetime.datetime.now().strftime(DATETIME_DB_FORMAT)}',
                                '{task_dict["due_date"]}',
-                               "false",
+                               0,
                                {task_dict["user_id"]});''')
             conn.commit()
     except Exception as ex: # pylint: disable=broad-except

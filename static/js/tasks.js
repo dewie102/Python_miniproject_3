@@ -12,7 +12,7 @@ tasks.forEach((task) => {
         due_date: task["due_date"],
     });
 
-    if (task["complete"] == "true") {
+    if (task["complete"] == 1) {
         checkbox = task_row.querySelector("input[type='checkbox']");
         checkbox.checked = true;
     }
