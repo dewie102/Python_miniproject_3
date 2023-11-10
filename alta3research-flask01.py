@@ -19,6 +19,9 @@ database_name = 'todo.db'
 
 @app.route("/")
 def index():
+    if session.get("user_id"):  # type: ignore
+        return redirect(url_for("view_user_tasks"), code=303)
+
     return render_template("index.html")
 
 
@@ -39,39 +42,73 @@ def login():
 
 @app.route("/tasks")
 def view_user_tasks():
-    if not session.get("user_id"): #type: ignore
+    if not session.get("user_id"):  # type: ignore
         return redirect(url_for("index"), code=303)
 
-    user_id: int = session["user_id"] # type: ignore
-    username: str = session["username"] # type: ignore
+    user_id: int = session["user_id"]  # type: ignore
 
-    tasks = get_user_tasks(user_id) #type: ignore
+    tasks = get_user_tasks(user_id)  # type: ignore
 
-    return render_template("tasks.html", tasks = tasks)
+    return render_template("tasks.html", tasks=tasks)
 
 
 @app.route("/tasks/json")
 def get_user_tasks_json():
-    if not session.get("user_id"): #type: ignore
+    if not session.get("user_id"):  # type: ignore
         return redirect(url_for("index"), code=303)
 
-    user_id: int = session["user_id"] # type: ignore
+    user_id: int = session["user_id"]  # type: ignore
 
-    tasks = get_user_tasks(user_id) #type: ignore
+    tasks = get_user_tasks(user_id)  # type: ignore
 
     return tasks
 
 
 @app.route("/tasks/<task_id>")
 def view_task(task_id: int):
-    if not session.get("user_id"): #type: ignore
+    if not session.get("user_id"):  # type: ignore
         return redirect(url_for("index"), code=303)
-    
-    user_id: int  = session["user_id"] #type: ignore
 
-    task = get_task(task_id, user_id) #type: ignore
+    user_id: int = session["user_id"]  # type: ignore
 
-    return render_template("view_task.html", task = task)
+    task = get_task(task_id, user_id)  # type: ignore
+
+    return render_template("view_task.html", task=task)
+
+
+@app.route("/tasks/edit/<task_id>", methods=["GET", "POST"])
+def edit_task(task_id: int):
+    if not session.get("user_id"):  # type: ignore
+        return redirect(url_for("index"), code=303)
+
+    user_id: int = session["user_id"]  # type: ignore
+    task = get_task(task_id, user_id)  # type: ignore
+
+    if request.method == "GET":
+        return render_template("edit_task.html", task=task)
+    else:
+        user_id: int = session["user_id"]  # type: ignore
+        task_user_id: int = request.form.get("task_user_id")
+
+        if str(user_id) != task_user_id:
+            return redirect(url_for("index"), code=303)
+
+        # Getting all the information from form
+        task_name = request.form.get("task_name")
+        due_date = request.form.get("due_date")
+        complete = request.form.get("complete")
+
+        if complete == 'on':
+            complete = True
+        else:
+            complete = False
+
+        # Take the string date and make it a datetime object
+        due_date = datetime.datetime.strptime(due_date, "%Y-%m-%dT%H:%M").strftime("%Y-%m-%d %H:%M")
+
+        update_task({"task_id": task_id, "task_name": task_name, "due_date": due_date, "complete": complete})
+
+        return redirect(url_for("index"), code=303)
 
 
 @app.route("/tasks/create", methods=["GET", "POST"])
@@ -79,10 +116,10 @@ def create_task():
     if request.method == "GET":
         return render_template("create.html")
     else:
-        if not session.get("user_id"): #type: ignore
+        if not session.get("user_id"):  # type: ignore
             return redirect(url_for("index"), code=303)
 
-        user_id = session["user_id"] #type: ignore
+        user_id = session["user_id"]  # type: ignore
         task_name = request.form.get("task_name")
         due_date = request.form.get("due_date")
 
@@ -92,18 +129,19 @@ def create_task():
         if not task_name:
             print("No task name provided")
             return redirect(url_for("view_user_tasks"))
-  
+
         if not due_date:
             due_date =\
-                (datetime.datetime.now() +\
-                datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
-        
+                (datetime.datetime.now() +
+                 datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+
         # Take the string date and make it a datetime object
         due_date = datetime.datetime.strptime(due_date, "%Y-%m-%dT%H:%M")
         # Take the datetime object and make it a string in the proper format
         due_date = due_date.strftime("%Y-%m-%d %H:%M")
-        
-        create_task_db({"user_id": user_id, "task_name": task_name, "due_date": due_date})
+
+        create_task_db(
+            {"user_id": user_id, "task_name": task_name, "due_date": due_date})
 
         return redirect(url_for("view_user_tasks"))
 
@@ -113,7 +151,13 @@ def create_task():
 def delete_task(task_id: int):
     delete_task_db(task_id)
     return "{}"
-    #return redirect(url_for("view_user_tasks"), code=303)
+    # return redirect(url_for("view_user_tasks"), code=303)
+
+
+@app.route("/signout")
+def signout():
+    session.clear()
+    return redirect(url_for("index"))
 
 
 def get_or_create_user(username: str):
@@ -130,7 +174,8 @@ def get_or_create_user(username: str):
                 return dict(results[0])
             else:
                 # Create a new user
-                cursor.execute(f"INSERT INTO Users (name) VALUES ('{username}')")
+                cursor.execute(
+                    f"INSERT INTO Users (name) VALUES ('{username}')")
                 # Commit it to the DB
                 conn.commit()
                 # Get the new user
@@ -146,16 +191,16 @@ def get_or_create_user(username: str):
                                '{(datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M")}',
                                "false",
                                {new_user["ID"]})'''
-                
+
                 cursor.execute(cmd)
-                
+
                 # Commit it to the DB
                 conn.commit()
 
                 return new_user
     except Exception as ex:
         print(f"There was an error: {ex}")
-        
+
 
 def get_user_tasks(user_id: int) -> List[Dict[str, str]]:
     tasks: List[Dict[str, str]] = []
@@ -184,7 +229,8 @@ def get_task(task_id: int, user_id: int):
             conn.row_factory = sql.Row
             cursor = conn.cursor()
 
-            cursor.execute(f"SELECT * FROM Tasks WHERE ID={task_id} AND user_id={user_id}")
+            cursor.execute(
+                f"SELECT * FROM Tasks WHERE ID={task_id} AND user_id={user_id}")
             result = cursor.fetchone()
 
             task = dict(result)
@@ -196,14 +242,14 @@ def get_task(task_id: int, user_id: int):
 
 def create_task_db(task_dict: dict[str, str]):
     try:
-        with sql.connect(database_name) as conn:  
+        with sql.connect(database_name) as conn:
             conn.execute(f'''INSERT INTO Tasks
                                (name, create_date, due_date, complete, user_id) VALUES
                                ('{task_dict["task_name"]}',
                                '{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}',
                                '{task_dict["due_date"]}',
                                "false",
-                               {task_dict["user_id"]});''') 
+                               {task_dict["user_id"]});''')
             conn.commit()
     except Exception as ex:
         print(f"Something went wrong: {ex}")
@@ -211,9 +257,23 @@ def create_task_db(task_dict: dict[str, str]):
 
 def delete_task_db(task_id: int):
     try:
-        with sql.connect(database_name) as conn:  
+        with sql.connect(database_name) as conn:
             conn.execute(f'''DELETE FROM Tasks
-                               WHERE ID={task_id}''') 
+                               WHERE ID={task_id}''')
+            conn.commit()
+    except Exception as ex:
+        print(f"Something went wrong: {ex}")
+
+
+def update_task(task_dict: dict[str, str]):
+    try:
+        with sql.connect(database_name) as conn:
+            conn.execute(f'''UPDATE Tasks
+                            SET name = '{task_dict["task_name"]}',
+                            due_date ='{task_dict["due_date"]}',
+                            complete = '{task_dict["complete"]}'
+                            WHERE
+                            ID={task_dict["task_id"]};''')
             conn.commit()
     except Exception as ex:
         print(f"Something went wrong: {ex}")

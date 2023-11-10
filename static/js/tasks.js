@@ -44,7 +44,8 @@ async function handleClick(evt) {
         let task_id = evt.target.id.split("_")[1];
         location.href = `/tasks/${task_id}`;
     } else if (evt.target.id.includes("edit")) {
-        console.log("Handling Edit");
+        let task_id = evt.target.id.split("_")[1];
+        location.href = `/tasks/edit/${task_id}`;
     } else if (evt.target.id.includes("delete")) {
         let task_id = evt.target.id.split("_")[1];
         let response = await fetch("/tasks/delete/" + task_id, {

@@ -4,13 +4,14 @@
 {{ super() }}
 {% endblock %}
 {% block content %}
+<div class="d-flex flex-column align-items-center">
 <form action="">
     <label for="" class="form-label">Name</label>
-    <input type="text" name="" id="" class="form-control" disabled value={{task.name}}>
+    <input type="text" name="" id="" class="form-control" disabled value='{{task.name}}'>
     <label for="" class="form-label">Created Date</label>
-    <input type="text" name="" id="" class="form-control" disabled value={{task.created_date}}>
+    <input type="text" name="" id="" class="form-control" disabled value='{{task.create_date}}'>
     <label for="" class="form-label">Due Date</label>
-    <input type="text" name="" id="" class="form-control" disabled value={{task.due_date}}>
+    <input type="text" name="" id="" class="form-control" disabled value='{{task.due_date}}'>
     <label for="" class="form-label">Complete</label>
     <input type="checkbox" class="form-check-input" disabled checked={{task.complete}}>
 </form>
@@ -18,4 +19,5 @@
 <form action="/tasks" method="get">
     <button class="btn btn-primary" type="submit">Go Back</button>
 </form>
+</div>
 {% endblock %}
