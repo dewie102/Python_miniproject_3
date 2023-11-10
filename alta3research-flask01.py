@@ -8,6 +8,7 @@ from flask import Flask, url_for, request, render_template, redirect, session
 from dotenv import load_dotenv
 from typing import List, Dict
 
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -15,9 +16,11 @@ app.secret_key = os.environ.get("SECRET_KEY")
 
 database_name = 'todo.db'
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -31,10 +34,11 @@ def login():
     session["user_id"] = user_dict.get("ID", -1)
     session["username"] = user_dict.get("name", "defaultuser")
 
-    return redirect(url_for("get_tasks"))
+    return redirect(url_for("view_user_tasks"))
+
 
 @app.route("/tasks")
-def get_tasks():
+def view_user_tasks():
     user_id: int = session["user_id"] # type: ignore
     username: str = session["username"] # type: ignore
 
@@ -50,13 +54,43 @@ def view_task(task_id: int):
 
     return render_template("view_task.html", task = task)
 
-@app.route("/tasks/create")
-def create_task():
-    return "Creating task"
 
-@app.route("/tasks/delete/<number>")
-def delete_task(number: int):
-    return "Deleting task"
+@app.route("/tasks/create", methods=["GET", "POST"])
+def create_task():
+    if request.method == "GET":
+        return render_template("create.html")
+    else:
+        user_id = session["user_id"] #type: ignore
+        task_name = request.form.get("task_name")
+        due_date = request.form.get("due_date")
+
+        if not user_id:
+            return redirect(url_for("index"))
+
+        if not task_name:
+            print("No task name provided")
+            return redirect(url_for("view_user_tasks"))
+        
+        if not due_date:
+            due_date =\
+                (datetime.datetime.now() +\
+                datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+        
+        # Take the string date and make it a datetime object
+        due_date = datetime.datetime.strptime(due_date, "%Y-%m-%dT%H:%M")
+        # Take the datetime object and make it a string in the proper format
+        due_date = due_date.strftime("%Y-%m-%d %H:%M")
+        
+        create_task_db({"user_id": user_id, "task_name": task_name, "due_date": due_date})
+
+        return redirect(url_for("view_user_tasks"))
+
+
+# Have to make this POST for now because html forms only support get and post...
+@app.route("/tasks/delete/<task_id>", methods=["POST"])
+def delete_task(task_id: int):
+    delete_task_db(task_id)
+    return redirect(url_for("view_user_tasks"), code=303)
 
 
 def get_or_create_user(username: str):
@@ -85,8 +119,8 @@ def get_or_create_user(username: str):
                 cmd: str = f'''INSERT INTO Tasks
                                (name, create_date, due_date, complete, user_id) VALUES
                                ("DEFAULT TASK",
-                               '{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
-                               '{(datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")}',
+                               '{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}',
+                               '{(datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%Y-%m-%d %H:%M")}',
                                "false",
                                {new_user["ID"]})'''
                 
@@ -120,7 +154,7 @@ def get_user_tasks(user_id: int) -> List[Dict[str, str]]:
         return tasks
 
 
-def get_task(task_id):
+def get_task(task_id: int):
     task: Dict[str, str] = {}
     try:
         with sql.connect(database_name) as conn:
@@ -136,6 +170,30 @@ def get_task(task_id):
     finally:
         return task
 
+
+def create_task_db(task_dict: dict[str, str]):
+    try:
+        with sql.connect(database_name) as conn:  
+            conn.execute(f'''INSERT INTO Tasks
+                               (name, create_date, due_date, complete, user_id) VALUES
+                               ('{task_dict["task_name"]}',
+                               '{datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}',
+                               '{task_dict["due_date"]}',
+                               "false",
+                               {task_dict["user_id"]});''') 
+            conn.commit()
+    except Exception as ex:
+        print(f"Something went wrong: {ex}")
+
+
+def delete_task_db(task_id: int):
+    try:
+        with sql.connect(database_name) as conn:  
+            conn.execute(f'''DELETE FROM Tasks
+                               WHERE ID={task_id}''') 
+            conn.commit()
+    except Exception as ex:
+        print(f"Something went wrong: {ex}")
 
 
 if __name__ == "__main__":

@@ -8,20 +8,24 @@
 <table class="table">
     <thead>
         <tr>
+            <th scope="col">Complete</th>
             <th scope="col">Name</th>
             <th scope="col">Create Date</th>
             <th scope="col">Due Date</th>
-            <th scope="col">Complete</th>
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
         {% for task in tasks %}
         <tr class="task">
+            {% if task.complete == "true" %}
+            <td><input type="checkbox" class="form-check-input" checked="{{ task.complete }}" disabled></td>
+            {% else %}
+            <td><input type="checkbox" class="form-check-input" disabled></td>
+            {% endif %}
             <td>{{ task.name }}</td>
             <td>{{ task.create_date }}</td>
             <td>{{ task.due_date }}</td>
-            <td>{{ task.complete }}</td>
             <td>
                 <div>
                     <form action="/tasks/{{task.ID}}" method="get">
@@ -30,8 +34,8 @@
                     <form action="" method="get">
                         <button id="edit_{{task.ID}}" type="button" class="btn btn-warning">Edit</button>
                     </form>
-                    <form action="" method="delete">
-                        <button id="delete_{{task.ID}}" type="button" class="btn btn-danger">Delete</button>
+                    <form action="/tasks/delete/{{ task.ID }}" method="post">
+                        <button id="delete_{{task.ID}}" type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
             </td>

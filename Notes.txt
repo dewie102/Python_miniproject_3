@@ -30,7 +30,7 @@ sqlite3 as the database
 	due_date		DATETIME,
 	complete,		BOOLEAN,
 	user_id,		INT, 		NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES Users (id));```
+	FOREIGN KEY (user_id) REFERENCES Users (id));'''
 	
 '''CREATE TABLE IF NOT EXISTS Sub_Tasks
 	(ID INT PRIMARY KEY			NOT NULL,
@@ -39,11 +39,11 @@ sqlite3 as the database
 	due_date		DATETIME,
 	complete,		BOOLEAN,
 	task_id,		INT, 		NOT NULL,
-	FOREIGN KEY (task_id) REFERENCES Tasks (id));```
+	FOREIGN KEY (task_id) REFERENCES Tasks (id));'''
 	
 '''CREATE TABLE IF NOT EXISTS Users
 	(ID INT PRIMARY KEY			NOT NULL,
-	name			TEXT		NOT NULL);```
+	name			TEXT		NOT NULL);'''
 
 
 Would this be more of a many to many and therefore better to have a 3rd table that keeps track of which building a user is assigned to?
@@ -56,3 +56,8 @@ B | 1
 B | 2
 
 makes sense
+
+except:
+	msg = "error in removing the record"
+finally:
+	return render_template("result.html",msg = msg) # return success
